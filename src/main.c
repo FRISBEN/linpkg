@@ -51,6 +51,7 @@ void example_matrix_transpose()
         if (N <= 20 && M <= 20)
             mat_display(a); // Transposed matrix
 
+        destroy_matrix(a);
         printf("Elapse time: %f (ms)\n", cpu_elapse_time);
     }
 }
@@ -105,6 +106,10 @@ void example_matrix_mult()
 
         if (N <= 20 && M <= 20)
             mat_display(c);
+
+        destroy_matrix(a);
+        destroy_matrix(b);
+        destroy_matrix(c);
 
         printf("Elapse time: %f (ms)\n", cpu_elapse_time);
     }
