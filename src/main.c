@@ -9,8 +9,8 @@ void example_matrix_mult();
 
 int main()
 {
-    example_matrix_transpose();
-    // example_matrix_mult();
+    // example_matrix_transpose();
+    example_matrix_mult();
 
     return 0;
 }

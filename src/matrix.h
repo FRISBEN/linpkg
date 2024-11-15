@@ -2,6 +2,8 @@
 #define MATRIX_H
 
 #include <stdlib.h>
+#include <omp.h>
+#include <xmmintrin.h>
 
 #define NULL_CODE -1
 #define INDEX(col_size, i, j) col_size *i + j
@@ -23,13 +25,12 @@ typedef struct matrix_dense
     __uint col_size;
 } matrix;
 
-int mat_set(matrix *a, double value, __uint i, __uint j);
+int mat_set(matrix *a, float value, __uint i, __uint j);
 matrix *make_dense(__uint row_size, __uint col_size);
 void destroy_matrix(matrix *m);
-
 int mat_add(matrix *a, matrix *b, matrix *add);
 int mat_sub(matrix *a, matrix *b, matrix *sub);
 int mat_mult(matrix *a, matrix *b, matrix *mult);
 int mat_trans(matrix *a);
-int mat_smult(matrix a, double scalar);
+// int mat_smult(matrix a, double scalar);
 #endif

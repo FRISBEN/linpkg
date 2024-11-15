@@ -1,7 +1,8 @@
 #include "matrix.h"
+
 void set_mem(matrix *, __uint, __uint);
 
-int mat_set(matrix *a, double value, __uint i, __uint j)
+int mat_set(matrix *a, float value, __uint i, __uint j)
 {
     if (a == NULL || a->ele == NULL)
     {
@@ -16,9 +17,19 @@ int mat_add(matrix *a, matrix *b, matrix *add)
 {
     ERROR_CHECH(a, b, add);
     __uint length = a->col_size * a->row_size;
-    for (__uint i = 0; i < length; i++)
+    // #pragma omp parallel for
+    for (__uint i = 0; i < length; i += 4)
     {
-        add->ele[i] = a->ele[i] + b->ele[i];
+        // Using SIMD
+        __m128 vec_a = _mm_load_ps(&a->ele[i]);
+        __m128 vec_b = _mm_load_ps(&b->ele[i]);
+
+        // Perform SIMD addition
+        __m128 sum_vec = _mm_add_ps(vec_a, vec_b);
+
+        // Update the original array
+        _mm_storeu_ps(&add->ele[i], sum_vec);
+        // add->ele[i] = a->ele[i] + b->ele[i];
     }
     return 1;
 }
@@ -43,13 +54,15 @@ int mat_mult(matrix *a, matrix *b, matrix *mult)
 
     register double sum;
     register __uint i, j, k, ij, ik, kj;
-    for (j = 0; j < b->col_size; j++)
+
+    // #pragma omp parallel for
+    for (i = 0; i < b->col_size; i++)
     {
-        for (i = 0; i < a->row_size; i++)
+        for (k = 0; k < a->row_size; k++)
         {
             sum = 0;
             ij = INDEX(a->row_size, i, j);
-            for (k = 0; k < a->col_size; k++)
+            for (j = 0; j < a->col_size; j += 4)
             {
                 ik = INDEX(a->col_size, i, k);
                 kj = INDEX(b->col_size, k, j);
@@ -103,7 +116,6 @@ int mat_trans(matrix *a)
         a->row_size = a->col_size;
         a->col_size = col_size;
     }
-
     return 0;
 }
 
